@@ -1,16 +1,18 @@
 
 # Word of the Day
 
-![image](https://github.com/user-attachments/assets/1929487b-ac6f-45d3-90ac-b678b693db24)
+![image](https://github.com/user-attachments/assets/b303920d-404f-4f1f-92bb-6ec6e6a98ba6)
 
 This repository provides a simple script that fetches a random "Word of the Day" using either OpenAI's or Anthropic's Claude API and displays it whenever you open a terminal window.
 
 The script supports:
 
-- Multiple configurable languages.
+- Multiple configurable languages (you will get a random language from your selected languages each time you launch the shell).
 - Cached API calls per day to avoid unnecessary API hits.
 - Multiple shells (bash, zsh, fish).
 - Choice between OpenAI and Claude APIs.
+- Additional language features:
+  - Japanese: Furigana will be displayed for each word.
 
 ## Requirements
 
@@ -42,3 +44,13 @@ It will still be installed into your `config.fish`, because installation is dete
 bash
 bash <(curl -sSL https://raw.githubusercontent.com/mm-zacharydavison/wotd/main/install.sh)
 ```
+
+# Install Location
+
+All files are installed to `~/.wotd`.
+Your `~/.bashrc`, `~/.zshrc`, `~/.config/fish/config.fish` will have a line added to them to run the script.
+
+# Cache
+
+The cache is stored in `~/.wotd/cache`.
+If you want a new set of words for today, just remove the cache directory.
