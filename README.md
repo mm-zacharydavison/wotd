@@ -7,7 +7,7 @@ This repository provides a simple script that fetches a random "Word of the Day"
 
 The script supports:
 
-- Multiple configurable languages.
+- Multiple configurable languages (you will get a random language from your selected languages each time you launch the shell).
 - Cached API calls per day to avoid unnecessary API hits.
 - Multiple shells (bash, zsh, fish).
 - Choice between OpenAI and Claude APIs.
@@ -42,3 +42,13 @@ It will still be installed into your `config.fish`, because installation is dete
 bash
 bash <(curl -sSL https://raw.githubusercontent.com/mm-zacharydavison/wotd/main/install.sh)
 ```
+
+# Install Location
+
+All files are installed to `~/.wotd`.
+Your `~/.bashrc`, `~/.zshrc`, `~/.config/fish/config.fish` will have a line added to them to run the script.
+
+# Cache
+
+The cache is stored in `~/.wotd/cache`.
+If you want a new set of words for today, just remove the cache directory.
