@@ -6,6 +6,10 @@ PREVIOUS_WORDS_FILE="$WORD_OF_DAY_CACHE/previous_words.txt"
 ENABLED_LANGUAGES="English,German,Japanese,French"
 NATIVE_LANGUAGE="English"
 
+# Custom instructions for specific languages
+declare -A LANGUAGE_INSTRUCTIONS
+LANGUAGE_INSTRUCTIONS["Japanese"]="For Japanese words, include the furigana (reading) in parentheses after the word."
+
 # User's preferred AI service (set during installation)
 PREFERRED_AI="openai"
 
@@ -42,6 +46,12 @@ fetch_word_of_day() {
         used_words=$(cat "$PREVIOUS_WORDS_FILE" | tr '\n' ',' | sed 's/,$//')
     fi
 
+    # Get custom instructions for the language
+    local custom_instructions="${LANGUAGE_INSTRUCTIONS[$language]}"
+    
+    # Construct the prompt with custom instructions
+    local prompt="You are a multilingual dictionary. Provide a unique word of the day in $language along with its meaning in $NATIVE_LANGUAGE. Today's date is $current_date. Exclude these words: $used_words. Respond with only the word, a pronunciation guide in $NATIVE_LANGUAGE, and its definition in $NATIVE_LANGUAGE. Print the word on its own line, first. Include spaces between all three lines. $custom_instructions"
+
     # Start spinner in background
     spinner &
     SPINNER_PID=$!
@@ -51,8 +61,8 @@ fetch_word_of_day() {
             -H "Authorization: Bearer $OPENAI_API_KEY" \
             -H "Content-Type: application/json" \
             -d "{
-                \"model\": \"gpt-4o\",
-                \"messages\": [{\"role\": \"system\", \"content\": \"You are a multilingual dictionary. Provide a unique word of the day in $language along with its meaning in $NATIVE_LANGUAGE. Today's date is $current_date. Exclude these words: $used_words. Respond with only the word, a pronunciation guide in $NATIVE_LANGUAGE, and its definition in $NATIVE_LANGUAGE. Print the word word on its own line, first. Include spaces between all three lines.\"}]
+                \"model\": \"gpt-4\",
+                \"messages\": [{\"role\": \"system\", \"content\": \"$prompt\"}]
             }")
         word_and_definition=$(echo "$response" | jq -r '.choices[0].message.content')
     elif [ "$API_TO_USE" = "claude" ]; then
@@ -60,9 +70,9 @@ fetch_word_of_day() {
             -H "Content-Type: application/json" \
             -H "x-api-key: $ANTHROPIC_API_KEY" \
             -d "{
-                \"model\": \"claude-3-5-haiku-latest\",
+                \"model\": \"claude-3-haiku-20240307\",
                 \"max_tokens_to_sample\": 300,
-                \"messages\": [{\"role\": \"user\", \"content\": \"You are a multilingual dictionary. Provide a unique word of the day in $language along with its meaning in $NATIVE_LANGUAGE. Today's date is $current_date. Exclude these words: $used_words. Respond with only the word, a pronunciation guide in $NATIVE_LANGUAGE, and its definition in $NATIVE_LANGUAGE. Print the word word on its own line, first. Include spaces between all three lines.\"}]
+                \"messages\": [{\"role\": \"user\", \"content\": \"$prompt\"}]
             }")
         word_and_definition=$(echo "$response" | jq -r '.content[0].text')
     fi
