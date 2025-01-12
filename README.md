@@ -1,7 +1,7 @@
 
 # Word of the Day
 
-![image](https://github.com/user-attachments/assets/3626f979-f151-4228-a94a-3d7f294d6e8c)
+![image](https://github.com/user-attachments/assets/b303920d-404f-4f1f-92bb-6ec6e6a98ba6)
 
 This repository provides a simple script that fetches a random "Word of the Day" using either OpenAI's or Anthropic's Claude API and displays it whenever you open a terminal window.
 
@@ -11,6 +11,8 @@ The script supports:
 - Cached API calls per day to avoid unnecessary API hits.
 - Multiple shells (bash, zsh, fish).
 - Choice between OpenAI and Claude APIs.
+- Additional language features:
+  - Japanese: Furigana will be displayed for each word.
 
 ## Requirements
 
