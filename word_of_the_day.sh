@@ -8,7 +8,7 @@ NATIVE_LANGUAGE="English"
 
 # Custom instructions for specific languages
 declare -A LANGUAGE_INSTRUCTIONS
-LANGUAGE_INSTRUCTIONS["Japanese"]="For Japanese words, include the furigana (reading) in parentheses after the <word>"
+LANGUAGE_INSTRUCTIONS["Japanese"]="For Japanese words, include the furigana (reading) in 「」 after the <word>. Separate the furigana for each kanji with a ・, e.g: 大人　「おと・な」"
 
 # User's preferred AI service (set during installation)
 PREFERRED_AI="openai"
@@ -50,7 +50,7 @@ fetch_word_of_day() {
     local custom_instructions="${LANGUAGE_INSTRUCTIONS[$language]}"
     
     # Construct the prompt with custom instructions
-    local prompt="You are a multilingual dictionary. Provide a unique word of the day in $language along with its meaning in $NATIVE_LANGUAGE. Today's date is $current_date. Exclude these words: $used_words. Respond with only the word, a pronunciation guide in $NATIVE_LANGUAGE, and its definition in $NATIVE_LANGUAGE. The format should be <word> <pronunciation> <meaning>, with newlines inbetween each. $custom_instructions"
+    local prompt="You are a multilingual dictionary. Provide a unique word of the day in $language along with its meaning in $NATIVE_LANGUAGE. Today's date is $current_date. Exclude these words: $used_words. Respond with only the word, a pronunciation guide in $NATIVE_LANGUAGE, and its definition in $NATIVE_LANGUAGE. The format should be <word>\n<pronunciation>\n<meaning>, with no empty lines in between each. $custom_instructions"
 
     # Start spinner in background
     spinner &
