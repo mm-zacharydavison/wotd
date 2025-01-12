@@ -4,6 +4,7 @@ PREVIOUS_WORDS_FILE="$WORD_OF_DAY_CACHE/previous_words.txt"
 
 # User-configurable languages (comma-separated, e.g., "English,Spanish,French")
 ENABLED_LANGUAGES="English,Japanese,German,French"
+NATIVE_LANGUAGE="English"
 
 # Check if OPENAI_API_KEY is set
 if [ -z "$OPENAI_API_KEY" ]; then
@@ -36,7 +37,7 @@ fetch_word_of_day() {
         -H "Content-Type: application/json" \
         -d "{
             \"model\": \"gpt-3.5-turbo\",
-            \"messages\": [{\"role\": \"system\", \"content\": \"You are a multilingual dictionary. Provide a unique word of the day in $language along with its meaning. Today's date is $current_date. Exclude these words: $used_words. Respond with only the word and its definition.\"}]
+            \"messages\": [{\"role\": \"system\", \"content\": \"You are a multilingual dictionary. Provide a unique word of the day in $language along with its meaning in $NATIVE_LANGUAGE. Also provide the translation of the word in $NATIVE_LANGUAGE. Today's date is $current_date. Exclude these words: $used_words. Respond with only the word, its definition in $NATIVE_LANGUAGE, and its translation in $NATIVE_LANGUAGE.\"}]
         }")
 
     # Stop spinner
