@@ -1,7 +1,7 @@
 
 # Word of the Day
 
-![image](https://github.com/user-attachments/assets/0441b743-effe-4a4f-b3de-6661b4f433f4)
+![image](https://github.com/user-attachments/assets/1929487b-ac6f-45d3-90ac-b678b693db24)
 
 This repository provides a simple script that fetches a random "Word of the Day" using OpenAI's API and displays it whenever you open a terminal window.
 
