@@ -1,8 +1,9 @@
 #!/bin/bash
 WORD_OF_DAY_CACHE="$HOME/.wotd/cache"
+PREVIOUS_WORDS_FILE="$WORD_OF_DAY_CACHE/previous_words.txt"
 
 # User-configurable languages (comma-separated, e.g., "English,Spanish,French")
-ENABLED_LANGUAGES="English,German,French,Japanese"
+ENABLED_LANGUAGES="English,Japanese,German,French"
 
 # Check if OPENAI_API_KEY is set
 if [ -z "$OPENAI_API_KEY" ]; then
@@ -18,6 +19,13 @@ fi
 fetch_word_of_day() {
     local language="$1"
     local response
+    local current_date=$(date +%Y-%m-%d)
+    local used_words=""
+
+    # Read used words
+    if [ -f "$PREVIOUS_WORDS_FILE" ]; then
+        used_words=$(cat "$PREVIOUS_WORDS_FILE" | tr '\n' ',' | sed 's/,$//')
+    fi
 
     # Start spinner in background
     spinner &
@@ -28,7 +36,7 @@ fetch_word_of_day() {
         -H "Content-Type: application/json" \
         -d "{
             \"model\": \"gpt-3.5-turbo\",
-            \"messages\": [{\"role\": \"system\", \"content\": \"You are a multilingual dictionary. Provide a word of the day in $language along with its meaning.\"}]
+            \"messages\": [{\"role\": \"system\", \"content\": \"You are a multilingual dictionary. Provide a unique word of the day in $language along with its meaning. Today's date is $current_date. Exclude these words: $used_words. Respond with only the word and its definition.\"}]
         }")
 
     # Stop spinner
@@ -36,7 +44,12 @@ fetch_word_of_day() {
     wait $SPINNER_PID 2>/dev/null
     printf "\r%s\r" "$(printf ' %.0s' {1..20})"
 
-    echo "$response" | jq -r '.choices[0].message.content' > "$WORD_OF_DAY_CACHE/$language.cache"
+    local word_and_definition=$(echo "$response" | jq -r '.choices[0].message.content')
+    echo "$word_and_definition" > "$WORD_OF_DAY_CACHE/$language.cache"
+
+    # Extract just the word and add it to used words
+    local new_word=$(echo "$word_and_definition" | awk '{print $1}' | tr -d '[:punct:]')
+    echo "$new_word" >> "$PREVIOUS_WORDS_FILE"
 }
 
 # Spinner function
