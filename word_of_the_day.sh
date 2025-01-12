@@ -8,7 +8,7 @@ NATIVE_LANGUAGE="English"
 
 # Custom instructions for specific languages
 declare -A LANGUAGE_INSTRUCTIONS
-LANGUAGE_INSTRUCTIONS["Japanese"]="For Japanese words, include the furigana (reading) in parentheses after the <word>."
+LANGUAGE_INSTRUCTIONS["Japanese"]="For Japanese words, include the furigana (reading) in parentheses after the <word>"
 
 # User's preferred AI service (set during installation)
 PREFERRED_AI="openai"
@@ -61,7 +61,7 @@ fetch_word_of_day() {
             -H "Authorization: Bearer $OPENAI_API_KEY" \
             -H "Content-Type: application/json" \
             -d "{
-                \"model\": \"gpt-4\",
+                \"model\": \"gpt-4o\",
                 \"messages\": [{\"role\": \"system\", \"content\": \"$prompt\"}]
             }")
         word_and_definition=$(echo "$response" | jq -r '.choices[0].message.content')
@@ -70,7 +70,7 @@ fetch_word_of_day() {
             -H "Content-Type: application/json" \
             -H "x-api-key: $ANTHROPIC_API_KEY" \
             -d "{
-                \"model\": \"claude-3-haiku-20240307\",
+                \"model\": \"claude-3-haiku-latest\",
                 \"max_tokens_to_sample\": 300,
                 \"messages\": [{\"role\": \"user\", \"content\": \"$prompt\"}]
             }")
