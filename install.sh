@@ -31,9 +31,31 @@ install_wotd() {
     echo -e "\e[1;34mWhich languages do you want get words of the day for? (comma-separated, e.g., English,Spanish,French)\e[0m"
     read -r ENABLED_LANGUAGES
 
-    # Add ENABLED_LANGUAGES and NATIVE_LANGUAGE to the script
+    # Check if both API keys are set
+    if [ -n "$OPENAI_API_KEY" ] && [ -n "$ANTHROPIC_API_KEY" ]; then
+        # Ask the user which AI service they prefer
+        echo -e "\e[1;34mBoth OpenAI and Claude API keys are set. Which AI service do you prefer? (openai/claude)\e[0m"
+        read -r PREFERRED_AI
+
+        # Validate the AI choice
+        case "$PREFERRED_AI" in
+            openai|OPENAI|OpenAI) PREFERRED_AI="openai" ;;
+            claude|CLAUDE|Claude) PREFERRED_AI="claude" ;;
+            *) echo -e "\e[1;31mInvalid choice. Defaulting to OpenAI.\e[0m" && PREFERRED_AI="openai" ;;
+        esac
+    elif [ -n "$OPENAI_API_KEY" ]; then
+        PREFERRED_AI="openai"
+    elif [ -n "$ANTHROPIC_API_KEY" ]; then
+        PREFERRED_AI="claude"
+    else
+        echo -e "\e[1;31mError: Neither OPENAI_API_KEY nor ANTHROPIC_API_KEY is set. Please set at least one in your environment variables.\e[0m"
+        exit 1
+    fi
+
+    # Add ENABLED_LANGUAGES, NATIVE_LANGUAGE, and PREFERRED_AI to the script
     sed -i "s/^ENABLED_LANGUAGES=.*$/ENABLED_LANGUAGES=\"$ENABLED_LANGUAGES\"/" "$INSTALL_DIR/$SCRIPT_NAME"
     sed -i "s/^NATIVE_LANGUAGE=.*$/NATIVE_LANGUAGE=\"$NATIVE_LANGUAGE\"/" "$INSTALL_DIR/$SCRIPT_NAME"
+    sed -i "s/^PREFERRED_AI=.*$/PREFERRED_AI=\"$PREFERRED_AI\"/" "$INSTALL_DIR/$SCRIPT_NAME"
 
     # Add the script to shell config files
     echo -e "\e[1;34mAdding the Word of the Day script to your shell configuration files...\e[0m"

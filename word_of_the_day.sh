@@ -6,11 +6,25 @@ PREVIOUS_WORDS_FILE="$WORD_OF_DAY_CACHE/previous_words.txt"
 ENABLED_LANGUAGES="English,Japanese,German,French"
 NATIVE_LANGUAGE="English"
 
-# Check if OPENAI_API_KEY is set
-if [ -z "$OPENAI_API_KEY" ]; then
-    echo -e "\e[1;31mError: OPENAI_API_KEY is not set. Please set it in your environment variables.\e[0m" >&2
-    exit 1
-fi
+# User's preferred AI service (set during installation)
+PREFERRED_AI="openai"
+
+# Function to determine which API to use
+determine_api() {
+    if [ -n "$OPENAI_API_KEY" ] && [ -n "$ANTHROPIC_API_KEY" ]; then
+        echo "$PREFERRED_AI"
+    elif [ -n "$OPENAI_API_KEY" ]; then
+        echo "openai"
+    elif [ -n "$ANTHROPIC_API_KEY" ]; then
+        echo "claude"
+    else
+        echo -e "\e[1;31mError: Neither OPENAI_API_KEY nor ANTHROPIC_API_KEY is set. Please set at least one in your environment variables.\e[0m" >&2
+        exit 1
+    fi
+}
+
+# Determine which API to use
+API_TO_USE=$(determine_api)
 
 # Path to store the cached word of the day
 if [ ! -d "$WORD_OF_DAY_CACHE" ]; then
@@ -32,20 +46,32 @@ fetch_word_of_day() {
     spinner &
     SPINNER_PID=$!
 
-    response=$(curl -s -X POST https://api.openai.com/v1/chat/completions \
-        -H "Authorization: Bearer $OPENAI_API_KEY" \
-        -H "Content-Type: application/json" \
-        -d "{
-            \"model\": \"gpt-4o\",
-            \"messages\": [{\"role\": \"system\", \"content\": \"You are a multilingual dictionary. Provide a unique word of the day in $language along with its meaning in $NATIVE_LANGUAGE. Today's date is $current_date. Exclude these words: $used_words. Respond with only the word and its definition in $NATIVE_LANGUAGE.\"}]
-        }")
+    if [ "$API_TO_USE" = "openai" ]; then
+        response=$(curl -s -X POST https://api.openai.com/v1/chat/completions \
+            -H "Authorization: Bearer $OPENAI_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d "{
+                \"model\": \"gpt-4o\",
+                \"messages\": [{\"role\": \"system\", \"content\": \"You are a multilingual dictionary. Provide a unique word of the day in $language along with its meaning in $NATIVE_LANGUAGE. Today's date is $current_date. Exclude these words: $used_words. Respond with only the word and its definition in $NATIVE_LANGUAGE.\"}]
+            }")
+        word_and_definition=$(echo "$response" | jq -r '.choices[0].message.content')
+    elif [ "$API_TO_USE" = "claude" ]; then
+        response=$(curl -s -X POST https://api.anthropic.com/v1/messages \
+            -H "Content-Type: application/json" \
+            -H "x-api-key: $ANTHROPIC_API_KEY" \
+            -d "{
+                \"model\": \"claude-2\",
+                \"max_tokens_to_sample\": 300,
+                \"messages\": [{\"role\": \"user\", \"content\": \"You are a multilingual dictionary. Provide a unique word of the day in $language along with its meaning in $NATIVE_LANGUAGE. Today's date is $current_date. Exclude these words: $used_words. Respond with only the word and its definition in $NATIVE_LANGUAGE.\"}]
+            }")
+        word_and_definition=$(echo "$response" | jq -r '.content[0].text')
+    fi
 
     # Stop spinner
     kill $SPINNER_PID
     wait $SPINNER_PID 2>/dev/null
     printf "\r%s\r" "$(printf ' %.0s' {1..20})"
 
-    local word_and_definition=$(echo "$response" | jq -r '.choices[0].message.content')
     echo "$word_and_definition" > "$WORD_OF_DAY_CACHE/$language.cache"
 
     # Extract just the word and add it to used words
