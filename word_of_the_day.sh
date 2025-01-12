@@ -3,7 +3,7 @@ WORD_OF_DAY_CACHE="$HOME/.wotd/cache"
 PREVIOUS_WORDS_FILE="$WORD_OF_DAY_CACHE/previous_words.txt"
 
 # User-configurable languages (comma-separated, e.g., "English,Spanish,French")
-ENABLED_LANGUAGES="English,Japanese,German,French"
+ENABLED_LANGUAGES="English,German,Japanese,French"
 NATIVE_LANGUAGE="English"
 
 # User's preferred AI service (set during installation)
@@ -60,7 +60,7 @@ fetch_word_of_day() {
             -H "Content-Type: application/json" \
             -H "x-api-key: $ANTHROPIC_API_KEY" \
             -d "{
-                \"model\": \"claude-2\",
+                \"model\": \"claude-3-5-haiku-latest\",
                 \"max_tokens_to_sample\": 300,
                 \"messages\": [{\"role\": \"user\", \"content\": \"You are a multilingual dictionary. Provide a unique word of the day in $language along with its meaning in $NATIVE_LANGUAGE. Today's date is $current_date. Exclude these words: $used_words. Respond with only the word and its definition in $NATIVE_LANGUAGE.\"}]
             }")
