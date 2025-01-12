@@ -52,7 +52,7 @@ fetch_word_of_day() {
             -H "Content-Type: application/json" \
             -d "{
                 \"model\": \"gpt-4o\",
-                \"messages\": [{\"role\": \"system\", \"content\": \"You are a multilingual dictionary. Provide a unique word of the day in $language along with its meaning in $NATIVE_LANGUAGE. Today's date is $current_date. Exclude these words: $used_words. Respond with only the word and its definition in $NATIVE_LANGUAGE.\"}]
+                \"messages\": [{\"role\": \"system\", \"content\": \"You are a multilingual dictionary. Provide a unique word of the day in $language along with its meaning in $NATIVE_LANGUAGE. Today's date is $current_date. Exclude these words: $used_words. Respond with only the word, a pronunciation guide in $NATIVE_LANGUAGE, and its definition in $NATIVE_LANGUAGE. Print the word word on its own line, first. Include spaces between all three lines.\"}]
             }")
         word_and_definition=$(echo "$response" | jq -r '.choices[0].message.content')
     elif [ "$API_TO_USE" = "claude" ]; then
@@ -62,7 +62,7 @@ fetch_word_of_day() {
             -d "{
                 \"model\": \"claude-3-5-haiku-latest\",
                 \"max_tokens_to_sample\": 300,
-                \"messages\": [{\"role\": \"user\", \"content\": \"You are a multilingual dictionary. Provide a unique word of the day in $language along with its meaning in $NATIVE_LANGUAGE. Today's date is $current_date. Exclude these words: $used_words. Respond with only the word and its definition in $NATIVE_LANGUAGE.\"}]
+                \"messages\": [{\"role\": \"user\", \"content\": \"You are a multilingual dictionary. Provide a unique word of the day in $language along with its meaning in $NATIVE_LANGUAGE. Today's date is $current_date. Exclude these words: $used_words. Respond with only the word, a pronunciation guide in $NATIVE_LANGUAGE, and its definition in $NATIVE_LANGUAGE. Print the word word on its own line, first. Include spaces between all three lines.\"}]
             }")
         word_and_definition=$(echo "$response" | jq -r '.content[0].text')
     fi
