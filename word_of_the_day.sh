@@ -36,8 +36,8 @@ fetch_word_of_day() {
         -H "Authorization: Bearer $OPENAI_API_KEY" \
         -H "Content-Type: application/json" \
         -d "{
-            \"model\": \"gpt-3.5-turbo\",
-            \"messages\": [{\"role\": \"system\", \"content\": \"You are a multilingual dictionary. Provide a unique word of the day in $language along with its meaning in $NATIVE_LANGUAGE. Also provide the translation of the word in $NATIVE_LANGUAGE. Today's date is $current_date. Exclude these words: $used_words. Respond with only the word, its definition in $NATIVE_LANGUAGE, and its translation in $NATIVE_LANGUAGE.\"}]
+            \"model\": \"gpt-4o\",
+            \"messages\": [{\"role\": \"system\", \"content\": \"You are a multilingual dictionary. Provide a unique word of the day in $language along with its meaning in $NATIVE_LANGUAGE. Today's date is $current_date. Exclude these words: $used_words. Respond with only the word and its definition in $NATIVE_LANGUAGE.\"}]
         }")
 
     # Stop spinner
