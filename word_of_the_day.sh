@@ -1,6 +1,6 @@
 #!/bin/bash
 WORD_OF_DAY_CACHE="$HOME/.wotd/cache"
-PREVIOUS_WORDS_FILE="$WORD_OF_DAY_CACHE/previous_words.txt"
+PREVIOUS_WORDS_FILE="$HOME/.wotd/.previous_words.txt"
 
 # User-configurable languages (comma-separated, e.g., "English,Spanish,French")
 ENABLED_LANGUAGES="English,German,Japanese,French"
@@ -85,7 +85,7 @@ fetch_word_of_day() {
     echo "$word_and_definition" > "$WORD_OF_DAY_CACHE/$language.cache"
 
     # Extract just the word and add it to used words
-    local new_word=$(echo "$word_and_definition" | awk '{print $1}' | tr -d '[:punct:]')
+    local new_word=$(echo "$word_and_definition" | awk 'NR==1 {print $1}' | tr -d '[:punct:]')
     echo "$new_word" >> "$PREVIOUS_WORDS_FILE"
 }
 
