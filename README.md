@@ -16,8 +16,8 @@ The script supports:
 
 ## Requirements
 
-- OpenAI API key (set as `OPENAI_API_KEY` environment variable) **OR**
-- Anthropic API key (set as `ANTHROPIC_API_KEY` environment variable)
+- OpenAI API key (set as `OPENAI_API_KEY` environment variable)
+- **OR** Anthropic API key (set as `ANTHROPIC_API_KEY` environment variable)
 - `curl`, `jq`
 
 ## API Selection
